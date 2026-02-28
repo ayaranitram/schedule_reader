@@ -1,7 +1,24 @@
+"""
+This module contains functions to extract and process the COMPDAT keyword from the schedule dictionary.
+The COMPDAT keyword defines the completion data for wells in the reservoir simulation model. It includes information such as the well name, location, status, and other parameters related to the well completion.
+The functions in this module will extract the COMPDAT data from the schedule dictionary, process it, and return it as a pandas DataFrame for further analysis and use in reservoir simulation models.
+
+The main functions in this module are:
+- `extract_compdat`: Extracts the COMPDAT keyword from the schedule dictionary and returns a DataFrame of COMPDAT data by DATES.
+- `extract_compdatl`: Extracts the COMPDATL keyword from the schedule dictionary and returns a DataFrame of COMPDATL data by DATES.
+- `extract_compdatm`: Alias for `extract_compdatl`.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 from .dates import parse_dates
 from .schedule_keywords import extract_keyword
 from .welspec import extract_welspecs, extract_welspecl
+
+__version__ = '0.7.0'
+__release__ = 20260228
 
 
 def _defaultIJ(well, date, IJ, welspec_table):

@@ -1,7 +1,18 @@
+"""
+A set of functions to extract the WELSPECS, WELSPECL, and WELLSPEC keywords from the schedule dictionary and return a DataFrame of WELSPECS data by DATES. These functions are shortcuts for the `extract_keyword` function for each of the corresponding keywords, and they also perform some additional processing to clean and format the data.
+The main function is `extract_welspecs`, which extracts the WELSPECS keyword, and the other two functions extract the WELSPECL and WELLSPEC keywords, respectively. 
+The `extract_welspec2` function is a shortcut to extract all three keywords and concatenate them into a single DataFrame.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 from .dates import parse_dates
 from .schedule_keywords import extract_keyword
 
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def extract_welspecs(schedule_dict:dict) -> pd.DataFrame:
     """

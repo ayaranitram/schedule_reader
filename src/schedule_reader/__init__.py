@@ -1,3 +1,10 @@
+"""
+A set of functions to read and process the schedule data from a .DATA file, including functions to extract the WELSPECS, COMPDAT, WCONPROD, WCONINJE, WCONHIST, WCONINJH, and WLIST keywords from the schedule dictionary and return a DataFrame of the corresponding data by DATES. Also includes functions to read and process the property keywords in the .DATA file, such as DIMENS, PORO, PERMX, etc.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 from .data_reader import read_data
 from .welspec import extract_welspecs, extract_welspecl, extract_wellspec, extract_welspec2
@@ -9,7 +16,8 @@ from .schedule_keywords import extract_keyword
 from .counter import start_counter
 
 __all__ = ['compdat2df', 'welspecs2df', 'property2df', 'start_counter']
-__version__ = '0.6.8'
+__version__ = '0.7.0'
+__release__ = 20260228
 
 
 def compdat2df(path, encoding='cp1252', verbose=False):

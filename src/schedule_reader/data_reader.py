@@ -1,7 +1,16 @@
+"""
+A function to read the .DATA file, look for schedule section and return a dictionary of keywords and its records on order of appearance.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 from .counter import Counter
 from .helpers import remove_inline_comment
 from os.path import exists
 
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
               start_date: str=None, paths: dict={}, folder: str=None, counter: Counter=None, main=True,

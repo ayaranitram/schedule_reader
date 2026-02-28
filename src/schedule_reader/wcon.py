@@ -1,7 +1,16 @@
+"""
+A set of functions to extract the WCONPROD, WCONINJE, WCONHIST, and WCONINJH keywords from the schedule dictionary and return a DataFrame of WELSPECS data by DATES. These functions are shortcuts for the `extract_keyword` function for each of the corresponding keywords, and they also perform some additional processing to clean and format the data.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 from .dates import parse_dates
 from .schedule_keywords import extract_keyword
 
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def extract_wconprod(schedule_dict:dict) -> pd.DataFrame:
     """

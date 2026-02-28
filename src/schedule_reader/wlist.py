@@ -1,7 +1,16 @@
+"""
+A set of functions to extract the WLIST keyword from the schedule dictionary and return a DataFrame of WLIST data by DATES. This function is a shortcut for the `extract_keyword` function for the WLIST keyword, and it also performs some additional processing to clean and format the data.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 from .dates import parse_dates
 from .schedule_keywords import extract_keyword
 
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def extract_wlist(schedule_dict:dict) -> pd.DataFrame:
     """

@@ -1,7 +1,15 @@
+"""
+A set of functions to read and process the property keywords in the .DATA file, such as DIMENS, PORO, PERMX, etc. These functions can be used to extract the data from the keywords and return it in a format that can be easily used for further analysis.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 
 __all__ = ['read_keyword_from_include', 'expand_keyword', 'ijk_index', 'get_dimens']
-
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def read_keyword_from_include(path, keyword=None, encoding='cp1252'):
     """

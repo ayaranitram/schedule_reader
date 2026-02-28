@@ -14,3 +14,9 @@ These functions must be provided with the path to .DATA file or include file as 
 Any other SCHEDULE section keyword can be extracted, but the columns will no be labelled, using the function keyword2df providing the path to the file and requested keyword as arguments.
 
 Returns a DataFrame with the extracted data, associated to its respective date from DATES keyword.
+
+## To install this package:  
+Install it from the <a href="https://pypi.org/project/schedule-reader/">pypi.org</a> repository:  
+`pip install schedule-reader`  
+or upgrade to the latest version:  
+`pip install --upgrade schedule-reader`  

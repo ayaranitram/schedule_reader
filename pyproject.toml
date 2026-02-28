@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "schedule_reader"
+version = "0.7.0"
+authors = [
+  { name="Martin Carlos Araya", email="martinaraya@gmail.com" },
+]
+description = "a schedule parser for standard style input data files."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    ]
+[project.urls]
+"Homepage" = "https://github.com/ayaranitram/schedule_reader"
+"Bug Tracker" = "https://github.com/ayaranitram/schedule_reader/issues"

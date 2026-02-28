@@ -1,3 +1,13 @@
+"""
+A helper function to remove inline comments from a keyword line, and a helper function to extract the I and J coordinates for a well from its WELSPECS definition when they are defaulted in the COMPDAT keyword. Also, a shortcut function to extract the COMPDAT keyword from the schedule dictionary and return a DataFrame of COMPDAT data by DATES.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
+__version__ = '0.7.0'
+__release__ = 20260228
+
 def remove_inline_comment(line:str) -> str:
     """
     Receives a keyword string line and remove the comments.

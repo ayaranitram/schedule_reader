@@ -1,6 +1,15 @@
+"""
+A function to parse the DATES keyword in the .SCHEDULE file and return a pandas Series of datetime objects.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 from .helpers import remove_inline_comment
 
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def parse_dates(dates_keyword):
     """

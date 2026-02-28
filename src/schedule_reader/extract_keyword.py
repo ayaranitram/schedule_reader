@@ -1,5 +1,14 @@
+"""
+A function to extract a keyword from the schedule dictionary and return a DataFrame with the records of that keyword.
+
+developed by: Martin Araya
+email: martinaraya@gmail.com
+"""
+
 import pandas as pd
 
+__version__ = '0.7.0'
+__release__ = 20260228
 
 def extract_keyword(schedule_dict:dict, keyword:str, record_names=None) -> pd.DataFrame:
     """
