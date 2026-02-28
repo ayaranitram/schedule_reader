@@ -6,9 +6,9 @@ email: martinaraya@gmail.com
 """
 
 import pandas as pd
-from .dates import parse_dates
+from .time_parser import parse_dates
 
-__version__ = '0.7.0'
+__version__ = '0.7.2'
 __release__ = 20260228
 
 def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) -> pd.DataFrame:
@@ -64,7 +64,12 @@ def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) 
     else:
         result = pd.DataFrame(data=result_table).transpose()
         record_names = ['date'] + [i for i in range(1, len(result.columns))]
-        result.columns = record_names
+        if len(result) > 0:
+            result.columns = record_names
+
+    if len(result) == 0:
+        print("No records found for keyword: ", keyword)
+        return
 
     result[result.select_dtypes(object).columns] = result.select_dtypes(object) \
         .apply(lambda col: col.str.strip(""""'" """)) \

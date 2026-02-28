@@ -7,9 +7,11 @@ email: martinaraya@gmail.com
 
 from .counter import Counter
 from .helpers import remove_inline_comment
+from .property_keywords import expand_keyword
+from .time_parser import tstep_to_dates
 from os.path import exists
 
-__version__ = '0.7.0'
+__version__ = '0.7.2'
 __release__ = 20260228
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
@@ -47,6 +49,9 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
         if line >= len(datafile):
             return True
         return datafile[line].strip().startswith('/')
+    
+    def _keyword_end_1record():
+        return datafile[line].strip().endswith('/')
 
     def _comment_line():
         return datafile[line].strip().startswith('--')
@@ -195,6 +200,34 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
             line += 1  # keyword end line
             if verbose:
                 print(f" {' until '.join(set([extracted[_counter0]['DATES'], extracted[counter.curr()]['DATES']]))}")
+
+
+        # if TSTEP is found, it will be converted to DATES using the last date found as start date
+        elif datafile[line].upper().startswith('TSTEP'):
+            line += 1
+            if verbose:
+                print("found TSTEP keyword")
+                _counter0 = counter.curr() + 1
+
+            # get the last date found to use as start date for TSTEP conversion
+            last_date_for_tsteps = _last_date()
+            # read all the TSTEP lines until the closing /
+            read_tstep_lines = True
+            while read_tstep_lines:
+                # skip empty and commented lines
+                if _empty_line() or _comment_line():
+                    line += 1
+                    continue
+
+                tstep = [float(y) for x in _line_data().split() for y in expand_keyword(x).split()]
+                dates = tstep_to_dates(tstep, last_date_for_tsteps)
+                for i, date in enumerate(dates):
+                    extracted[counter()] = {'DATES': str(date)}
+                read_tstep_lines = not _keyword_end_1record()
+
+            line += 1  # keyword end line
+            if verbose:
+                print(f" converted {len(tstep)} TSTEP to DATES, advancing date to {extracted[counter.curr()]['DATES']}")
 
 
         # if COMPDAT is found

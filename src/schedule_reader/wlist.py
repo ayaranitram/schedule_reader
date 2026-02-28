@@ -6,7 +6,7 @@ email: martinaraya@gmail.com
 """
 
 import pandas as pd
-from .dates import parse_dates
+from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
 __version__ = '0.7.0'

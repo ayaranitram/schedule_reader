@@ -13,7 +13,7 @@ email: martinaraya@gmail.com
 """
 
 import pandas as pd
-from .dates import parse_dates
+from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 from .welspec import extract_welspecs, extract_welspecl
 

@@ -6,16 +6,16 @@ email: martinaraya@gmail.com
 """
 
 import pandas as pd
-from .dates import parse_dates
+from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 __release__ = 20260228
 
 def extract_wconprod(schedule_dict:dict) -> pd.DataFrame:
     """
     Shortcut for `extract_keyword` for the WCONPROD keyword.
-    Extract the WCONPROD keyword from the schedule dictionary and return a DataFrame of WELSPECS data by DATES.
+    Extract the WCONPROD keyword from the schedule dictionary and return a DataFrame of WCONPROD data by DATES.
 
     Params:
         schedule_dict: dict
@@ -46,7 +46,7 @@ def extract_wconprod(schedule_dict:dict) -> pd.DataFrame:
 def extract_wconinje(schedule_dict:dict) -> pd.DataFrame:
     """
     Shortcut for `extract_keyword` for the WCONINJE keyword.
-    Extract the WCONINJE keyword from the schedule dictionary and return a DataFrame of WELSPECS data by DATES.
+    Extract the WCONINJE keyword from the schedule dictionary and return a DataFrame of WCONINJE data by DATES.
 
     Params:
         schedule_dict: dict
@@ -77,7 +77,7 @@ def extract_wconinje(schedule_dict:dict) -> pd.DataFrame:
 def extract_wconhist(schedule_dict:dict) -> pd.DataFrame:
     """
     Shortcut for `extract_keyword` for the WCONHIST keyword.
-    Extract the WCONHIST keyword from the schedule dictionary and return a DataFrame of WELSPECS data by DATES.
+    Extract the WCONHIST keyword from the schedule dictionary and return a DataFrame of WCONHIST data by DATES.
 
     Params:
         schedule_dict: dict
@@ -105,7 +105,7 @@ def extract_wconhist(schedule_dict:dict) -> pd.DataFrame:
 def extract_wconinjh(schedule_dict:dict) -> pd.DataFrame:
     """
     Shortcut for `extract_keyword` for the WCONINJE keyword.
-    Extract the WCONINJE keyword from the schedule dictionary and return a DataFrame of WELSPECS data by DATES.
+    Extract the WCONINJH keyword from the schedule dictionary and return a DataFrame of WCONINJH data by DATES.
 
     Params:
         schedule_dict: dict
