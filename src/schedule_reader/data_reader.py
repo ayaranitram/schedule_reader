@@ -8,10 +8,10 @@ email: martinaraya@gmail.com
 from .counter import Counter
 from .helpers import remove_inline_comment
 from .property_keywords import expand_keyword
-from .time_parser import tstep_to_dates
+from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.2'
+__version__ = '0.7.4'
 __release__ = 20260228
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
@@ -169,6 +169,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
     skip_ = False
     while line < len(datafile):  # read every line until the end
 
+
         # skip lines as indicated by SKIP keywords
         if skip_ and not datafile[line].upper().startswith('ENDSKIP'):
             line += 1
@@ -176,9 +177,17 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
             line += 1
             skip_ = False
 
+
         # skip empty and comment lines
         if _empty_line() or _comment_line():
             line += 1
+
+
+        # terminate reading if END keyword is found
+        if datafile[line].upper().startswith('END') and len(_line_data().split()[0]) == 3:
+            if verbose:
+                print(f"found END keyword in line {line}, terminating reading...")
+            break
 
 
         # if a DATES is found
@@ -228,6 +237,34 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
             line += 1  # keyword end line
             if verbose:
                 print(f" converted {len(tstep)} TSTEP to DATES, advancing date to {extracted[counter.curr()]['DATES']}")
+        
+
+        # if TIME is found, it will be converted to DATES using the last date found as start date
+        elif datafile[line].upper().startswith('TIME'):
+            line += 1
+            if verbose:
+                print("found TIME keyword")
+                _counter0 = counter.curr() + 1
+
+            # get the last date found to use as start date for TIME conversion
+            last_date_for_time = _last_date()
+            # read all the TIME lines until the closing /
+            read_time_lines = True
+            while read_time_lines:
+                # skip empty and commented lines
+                if _empty_line() or _comment_line():
+                    line += 1
+                    continue
+
+                time = [float(y) for x in _line_data().split() for y in expand_keyword(x).split()]
+                dates = time_to_dates(time, last_date_for_time)
+                for i, date in enumerate(dates):
+                    extracted[counter()] = {'DATES': str(date)}
+                read_time_lines = not _keyword_end_1record()
+
+            line += 1  # keyword end line
+            if verbose:
+                print(f" converted {len(time)} TIME to DATES, advancing date to {extracted[counter.curr()]['DATES']}")
 
 
         # if COMPDAT is found

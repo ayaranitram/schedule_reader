@@ -40,7 +40,7 @@ def parse_dates(dates_keyword):
 
 def tstep_to_dates(tstep, start_date):
     """
-    converts a list of time steps to a list of datetime objects, given a start date.
+    converts a list of time steps (TSTEP keyword) to a list of datetime objects, given a start date.
 
     Parameters:
         tstep: list of int or float
@@ -50,3 +50,18 @@ def tstep_to_dates(tstep, start_date):
     """
     start_date = pd.to_datetime(start_date, format='mixed', dayfirst=True)
     return pd.Series([start_date + pd.Timedelta(days=each) for each in tstep], dtype='datetime64[ns]')
+
+
+def time_to_dates(time, start_date):
+    """
+    converts a list of time steps (TIME keyword) to a list of datetime objects, given a start date.
+
+    Parameters:
+        tstep: list of int or float
+        start_date: str or datetime
+    Return:
+        pandas.Series of dtype datetime64[ns]
+    """
+    start_date = pd.to_datetime(start_date, format='mixed', dayfirst=True)
+    return pd.Series([start_date + pd.Timedelta(seconds=each) for each in time], dtype='datetime64[ns]')
+
