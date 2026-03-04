@@ -57,7 +57,7 @@ def time_to_dates(time, start_date):
     converts a list of time steps (TIME keyword) to a list of datetime objects, given a start date.
 
     Parameters:
-        tstep: list of int or float
+        time: list of int or float
         start_date: str or datetime
     Return:
         pandas.Series of dtype datetime64[ns]
