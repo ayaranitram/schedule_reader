@@ -705,6 +705,146 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
             line += 1
 
 
+        # if RESERVOIRS is found, will read each reservoir data file recursively
+        elif datafile[line].upper().startswith('RESERVOIRS'):
+            line += 1
+            if verbose:
+                print(f"found RESERVOIRS keyword inside {filepath}:")
+
+            reservoir_count = 0
+            # read all reservoir records until the closing /
+            while not _keyword_end():
+                # skip empty or commented lines
+                if _empty_line() or _comment_line():
+                    line += 1
+                    continue
+
+                # parse the reservoir record
+                record_fields = _line_data().split()
+                if len(record_fields) < 3:
+                    line += 1
+                    continue
+                
+                # extract fields
+                reservoir_file = record_fields[0].strip("'").strip('"')
+                reservoir_name = record_fields[1].strip("'").strip('"') if len(record_fields) > 1 else ''
+                num_ranks = int(record_fields[2]) if len(record_fields) > 2 else 1
+                gpu_ids = [int(x) for x in record_fields[3:]] if len(record_fields) > 3 else []
+                
+                # store RESERVOIRS metadata
+                extracted[counter()] = {
+                    'RESERVOIRS': {
+                        'file': reservoir_file,
+                        'name': reservoir_name,
+                        'num_ranks': num_ranks,
+                        'gpu_ids': gpu_ids
+                    }
+                }
+                
+                if verbose:
+                    print(f"  Reservoir: {reservoir_name} -> {reservoir_file}")
+                
+                # handle path substitution and relative paths (same as INCLUDE)
+                if '$' in reservoir_file:  # identify path from PATHS dictionary
+                    path_i = reservoir_file.index('$')
+                    path_f = reservoir_file.index('/', path_i)
+                    path_var = reservoir_file[path_i: path_f]
+                    if path_var[1:] not in paths:
+                        raise ValueError(f"Path variable '{path_var}' not defined in keyword PATHS.")
+                    reservoir_file = folder + reservoir_file[:path_i] + paths[path_var[1:]] + reservoir_file[path_f:]
+                elif reservoir_file.startswith('../') or reservoir_file.startswith('./'):
+                    reservoir_file = folder + reservoir_file
+                elif not reservoir_file.startswith('/'):
+                    reservoir_file = folder + reservoir_file
+                
+                # reading the reservoir file recursively
+                if verbose:
+                    print(f"  reading reservoir data file: {reservoir_file}")
+                reservoir_data = read_data(reservoir_file, paths=paths, folder=folder, verbose=verbose,
+                                          start_date=_last_date(), counter=counter, main=False)
+                # load the returned keywords dictionary into this keywords dictionary
+                extracted.update(reservoir_data)
+                reservoir_count += 1
+                line += 1
+            
+            line += 1  # keyword end line
+            if verbose:
+                print(f"  loaded {reservoir_count} reservoir data files")
+
+
+        # if SLAVES is found, will read each slave data file recursively
+        elif datafile[line].upper().startswith('SLAVES'):
+            line += 1
+            if verbose:
+                print(f"found SLAVES keyword inside {filepath}:")
+
+            slave_count = 0
+            # read all slave records until the closing /
+            while not _keyword_end():
+                # skip empty or commented lines
+                if _empty_line() or _comment_line():
+                    line += 1
+                    continue
+
+                # parse the slave record
+                record_fields = _line_data().split()
+                if len(record_fields) < 4:
+                    line += 1
+                    continue
+                
+                # extract fields
+                slave_name = record_fields[0].strip("'").strip('"')
+                basename = record_fields[1].strip("'").strip('"')
+                hostname = record_fields[2].strip("'").strip('"') if len(record_fields) > 2 else '*'
+                directory = record_fields[3].strip("'").strip('"') if len(record_fields) > 3 else ''
+                num_procs = int(record_fields[4]) if len(record_fields) > 4 else 1
+                
+                # construct full path: directory/basename.DATA
+                slave_file = f"{directory}{'/' if not directory.endswith('/') else ''}{basename}.DATA"
+                
+                # store SLAVES metadata
+                extracted[counter()] = {
+                    'SLAVES': {
+                        'name': slave_name,
+                        'file': slave_file,
+                        'basename': basename,
+                        'hostname': hostname,
+                        'directory': directory,
+                        'num_procs': num_procs
+                    }
+                }
+                
+                if verbose:
+                    print(f"  Slave: {slave_name} -> {slave_file}")
+                
+                # handle path substitution and relative paths (same as INCLUDE)
+                if '$' in slave_file:  # identify path from PATHS dictionary
+                    path_i = slave_file.index('$')
+                    path_f = slave_file.index('/', path_i)
+                    path_var = slave_file[path_i: path_f]
+                    if path_var[1:] not in paths:
+                        raise ValueError(f"Path variable '{path_var}' not defined in keyword PATHS.")
+                    slave_file = folder + slave_file[:path_i] + paths[path_var[1:]] + slave_file[path_f:]
+                elif slave_file.startswith('../') or slave_file.startswith('./'):
+                    slave_file = folder + slave_file
+                elif not slave_file.startswith('/'):
+                    slave_file = folder + slave_file
+                
+                # reading the slave file recursively
+                if verbose:
+                    print(f"  reading slave data file: {slave_file}")
+                slave_data = read_data(slave_file, paths=paths, folder=folder, verbose=verbose,
+                                      start_date=_last_date(), counter=counter, main=False)
+                # load the returned keywords dictionary into this keywords dictionary
+                extracted.update(slave_data)
+                slave_count += 1
+                line += 1
+            
+            line += 1  # keyword end line
+            if verbose:
+                print(f"  loaded {slave_count} slave data files")
+
+
         # read the listed keywords, that doesn't have and ending line with /
         elif _keyword() in skip0_keywords:
             keyword_ = _keyword()

@@ -21,8 +21,8 @@ from .dates_tstep import extract_dates, get_first_date
 from .counter import start_counter
 
 __all__ = ['compdat2df', 'welspecs2df', 'property2df', 'start_counter', 'dates2df', 'get_start_date', 'keyword2df', 'wconprod2df', 'wconinje2df', 'wconhist2df', 'wconinjh2df', 'wlist2df', 'gconprod2df', 'gconinje2df']
-__version__ = '0.7.12'
-__release__ = 20260228
+__version__ = '0.7.15'
+__release__ = 20260304
 
 
 def dates2df(path, encoding='cp1252', verbose=False):
