@@ -11,8 +11,8 @@ from .property_keywords import expand_keyword
 from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.4'
-__release__ = 20260228
+__version__ = '0.7.5'
+__release__ = 20260304
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
               start_date: str=None, paths: dict={}, folder: str=None, counter: Counter=None, main=True,
@@ -239,15 +239,14 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 print(f" converted {len(tstep)} TSTEP to DATES, advancing date to {extracted[counter.curr()]['DATES']}")
         
 
-        # if TIME is found, it will be converted to DATES using the last date found as start date
+        # if TIME is found, it will be converted to DATES using the START date as reference
         elif datafile[line].upper().startswith('TIME'):
             line += 1
             if verbose:
                 print("found TIME keyword")
                 _counter0 = counter.curr() + 1
 
-            # get the last date found to use as start date for TIME conversion
-            last_date_for_time = _last_date()
+            # TIME keyword specifies absolute times (days since START), unlike TSTEP which are increments
             # read all the TIME lines until the closing /
             read_time_lines = True
             while read_time_lines:
@@ -257,7 +256,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                     continue
 
                 time = [float(y) for x in _line_data().split() for y in expand_keyword(x).split()]
-                dates = time_to_dates(time, last_date_for_time)
+                dates = time_to_dates(time, start_date)
                 for i, date in enumerate(dates):
                     extracted[counter()] = {'DATES': str(date)}
                 read_time_lines = not _keyword_end_1record()

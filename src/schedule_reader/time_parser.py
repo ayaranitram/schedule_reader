@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 from .helpers import remove_inline_comment
 
-__version__ = '0.7.1'
-__release__ = 20260228
+__version__ = '0.7.2'
+__release__ = 20260304
 
 def parse_dates(dates_keyword):
     """
@@ -63,5 +63,5 @@ def time_to_dates(time, start_date):
         pandas.Series of dtype datetime64[ns]
     """
     start_date = pd.to_datetime(start_date, format='mixed', dayfirst=True)
-    return pd.Series([start_date + pd.Timedelta(seconds=each) for each in time], dtype='datetime64[ns]')
+    return pd.Series([start_date + pd.Timedelta(days=each) for each in time], dtype='datetime64[ns]')
 
