@@ -2,3 +2,6 @@
 src/schedule_reader/__pycache__
 build
 .idea
+dist
+src/unyts.egg-info
+support_docs
