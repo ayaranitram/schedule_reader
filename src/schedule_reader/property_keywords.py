@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 
 __all__ = ['read_keyword_from_include', 'expand_keyword', 'ijk_index', 'get_dimens']
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def read_keyword_from_include(path, keyword=None, encoding='cp1252'):
     """
@@ -18,7 +18,7 @@ def read_keyword_from_include(path, keyword=None, encoding='cp1252'):
     Returns:
 
     """
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='cp1252') as f:
         keyword_data = ''.join(f.readlines())
 
     if keyword not in keyword_data:
@@ -40,12 +40,17 @@ def expand_keyword(string):
     """
     received the string readout from the property keyword and return the string property expanded.
     """
-    return ' '.join(
-        [' '.join([each.split('*')[1]] * int(each.split('*')[0]))
-         if '*' in each
-         else each
-         for each in string.split()]
-    )
+    result = []
+    for each in string.split():
+        if '*' in each:
+            parts = each.split('*', 1)
+            if parts[0].isdigit():
+                result.extend([parts[1]] * int(parts[0]))
+            else:
+                result.append(each)  # wildcard name like 'P*', not a repetition
+        else:
+            result.append(each)
+    return ' '.join(result)
 
 
 def ijk_index(i, j=None, k=None):
@@ -67,7 +72,7 @@ def get_dimens(path, encoding='cp1252'):
     """
     reads the ASCII .DATA file and returns a three items tuple with the DIMENS keyword data.
     """
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='cp1252') as f:
         keyword_data = ''.join(f.readlines())
 
     keyword = 'DIMENS'
@@ -78,4 +83,4 @@ def get_dimens(path, encoding='cp1252'):
     f = keyword_data.index('/', i)
     keyword_data = keyword_data[i + len(keyword): f].strip()
 
-    return tuple(keyword_data.split())
+    return tuple(int(x) for x in keyword_data.split())

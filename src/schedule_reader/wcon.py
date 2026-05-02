@@ -9,8 +9,8 @@ import pandas as pd
 from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.7.1'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def extract_wconprod(schedule_dict:dict) -> pd.DataFrame:
     """
@@ -95,7 +95,7 @@ def extract_wconhist(schedule_dict:dict) -> pd.DataFrame:
         wconhist_table['well'] = [well.strip("'") for well in wconhist_table['well']]
         wconhist_table['well'] = wconhist_table['well'].astype('category')
         wconhist_table = wconhist_table.replace('1*', None).replace("'1*'", None)
-        wconhist_table.loc[:, ['status']].fillna('OPEN', inplace=True)
+        wconhist_table['status'] = wconhist_table['status'].fillna('OPEN')
         fill0 = ['OIL rate', 'WATER rate', 'GAS rate', 'THP limit', 'BHP limit', 'wet gas rate', 'NGL rate']
         wconhist_table[fill0] = wconhist_table[fill0].fillna(0)
         wconhist_table['VFP'] = wconhist_table['VFP'].ffill()

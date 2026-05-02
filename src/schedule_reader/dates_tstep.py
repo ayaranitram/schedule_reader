@@ -5,14 +5,12 @@ developed by: Martin Araya
 email: martinaraya@gmail.com
 """
 
-from ast import main
-
 import pandas as pd
 from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.2.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 
 def extract_dates(schedule_dict:dict) -> pd.Series:
@@ -26,7 +24,7 @@ def extract_dates(schedule_dict:dict) -> pd.Series:
         pandas.Series of dtype datetime64[ns]
     """
     dates_keyword = extract_keyword(schedule_dict, 'DATES', ['DATES'])
-    if len(dates_keyword) > 0:
+    if dates_keyword is not None and len(dates_keyword) > 0:
         dates_keyword = parse_dates(dates_keyword)
     return dates_keyword
 

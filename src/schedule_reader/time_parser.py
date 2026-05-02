@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 from .helpers import remove_inline_comment
 
-__version__ = '0.7.2'
-__release__ = 20260304
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def parse_dates(dates_keyword):
     """
@@ -49,7 +49,12 @@ def tstep_to_dates(tstep, start_date):
         pandas.Series of dtype datetime64[ns]
     """
     start_date = pd.to_datetime(start_date, format='mixed', dayfirst=True)
-    return pd.Series([start_date + pd.Timedelta(days=each) for each in tstep], dtype='datetime64[ns]')
+    cumulative = []
+    total = 0.0
+    for step in tstep:
+        total += step
+        cumulative.append(total)
+    return pd.Series([start_date + pd.Timedelta(days=d) for d in cumulative], dtype='datetime64[ns]')
 
 
 def time_to_dates(time, start_date):

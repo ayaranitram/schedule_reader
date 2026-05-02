@@ -10,8 +10,8 @@ import pandas as pd
 from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def extract_gconprod(schedule_dict:dict) -> pd.DataFrame:
     """
@@ -33,7 +33,7 @@ def extract_gconprod(schedule_dict:dict) -> pd.DataFrame:
                         'surf. gas balance fraction target', 'surf. water balance fraction target', 
                         'linear comb. rate limit', 'procedure on exceeding linear comb. rate limit']
     gconprod_table = extract_keyword(schedule_dict, 'GCONPROD', gconprod_columns)  # {}
-    if len(gconprod_table) > 0:
+    if gconprod_table is not None and len(gconprod_table) > 0:
         gconprod_table['date'] = parse_dates(
             gconprod_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         gconprod_table['group'] = [group.strip("'") for group in gconprod_table['group']]
@@ -69,7 +69,7 @@ def extract_gconinje(schedule_dict:dict) -> pd.DataFrame:
                         'response to higher level', 'guide rate', 'definition of guide rate',
                         'reinjection group', 'voidage replacement group', 'wet gas injection rate']
     gconinje_table = extract_keyword(schedule_dict, 'GCONINJE', gconinje_columns)  # {}
-    if len(gconinje_table) > 0:
+    if gconinje_table is not None and len(gconinje_table) > 0:
         gconinje_table['date'] = parse_dates(
             gconinje_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         gconinje_table['group'] = [group.strip("'") for group in gconinje_table['group']]

@@ -17,8 +17,8 @@ from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 from .welspec import extract_welspecs, extract_welspecl
 
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 
 def _defaultIJ(well, date, IJ, welspec_table):
@@ -35,7 +35,7 @@ def _defaultIJ(well, date, IJ, welspec_table):
             A DataFrame containing at least the 'date', 'well', 'I' and 'J' data from the WELSPEC keyword.
             This DataFrame is prepared by the function `extract_welspecs`. It is automatically called by the function `extract_compdat` if required.
     """
-    return welspec_table[(welspec_table['well'] == well) & (welspec_table['date'] <= date), IJ].iloc[-1]
+    return welspec_table.loc[(welspec_table['well'] == well) & (welspec_table['date'] <= date), IJ].iloc[-1]
 
 
 def extract_compdat(schedule_dict:dict) -> pd.DataFrame:
@@ -54,7 +54,7 @@ def extract_compdat(schedule_dict:dict) -> pd.DataFrame:
                        'transimissibility factor', 'well bore diameter', 'Kh', 'skin', 'D-factor', 'direction',
                        'pressure equivalent radius']
     compdat_table = extract_keyword(schedule_dict, 'COMPDAT', compdat_columns)  # {}
-    if len(compdat_table) > 0:
+    if compdat_table is not None and len(compdat_table) > 0:
         compdat_table['date'] = parse_dates(
             compdat_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         compdat_table['well'] = [well.strip("'") for well in compdat_table['well']]
@@ -66,12 +66,12 @@ def extract_compdat(schedule_dict:dict) -> pd.DataFrame:
             welspecs_table = extract_welspecs(schedule_dict)
             if 0 in compdat_table['I'].values:
                 compdat_table['I'] = [compdat_table['I'].iloc[r] if compdat_table['I'].iloc[r] > 0 else _defaultIJ(
-                    compdat_table['date'].iloc[r], compdat_table['date'].iloc[r], 'I', welspecs_table) for r in
-                                      len(compdat_table)]
+                    compdat_table['well'].iloc[r], compdat_table['date'].iloc[r], 'I', welspecs_table) for r in
+                                      range(len(compdat_table))]
             if 0 in compdat_table['J'].values:
-                compdat_table['J'] = [compdat_table['I'].iloc[r] if compdat_table['I'].iloc[r] > 0 else _defaultIJ(
-                    compdat_table['date'].iloc[r], compdat_table['date'].iloc[r], 'J', welspecs_table) for r in
-                                      len(compdat_table)]
+                compdat_table['J'] = [compdat_table['J'].iloc[r] if compdat_table['J'].iloc[r] > 0 else _defaultIJ(
+                    compdat_table['well'].iloc[r], compdat_table['date'].iloc[r], 'J', welspecs_table) for r in
+                                      range(len(compdat_table))]
         to_float = ['transimissibility factor', 'well bore diameter', 'Kh', 'skin', 'D-factor',
                     'pressure equivalent radius']
         compdat_table[to_float] = compdat_table[to_float].astype(float, errors='ignore')
@@ -97,24 +97,24 @@ def extract_compdatl(schedule_dict:dict) -> pd.DataFrame:
                         'transimissibility factor', 'well bore diameter', 'Kh', 'skin', 'D-factor', 'direction',
                         'pressure equivalent radius']
     compdatl_table = extract_keyword(schedule_dict, 'COMPDATL', compdatl_columns)  # {}
-    if len(compdatl_table) > 0:
+    if compdatl_table is not None and len(compdatl_table) > 0:
         compdatl_table['date'] = parse_dates(
             compdatl_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         compdatl_table['well'] = [well.strip("'") for well in compdatl_table['well']]
         compdatl_table['well'] = compdatl_table['well'].astype('category', errors='ignore')
-        compdat_table = compdat_table.replace('1*', None).replace("'1*'", None)
+        compdatl_table = compdatl_table.replace('1*', None).replace("'1*'", None)
         to_int = ['I', 'J', 'K_up', 'K_low']
         compdatl_table[to_int] = compdatl_table[to_int].astype('string').fillna('0').astype(int, errors='ignore')
         if 0 in compdatl_table['I'].values or 0 in compdatl_table['J'].values:
             welspecl_table = extract_welspecl(schedule_dict)
             if 0 in compdatl_table['I'].values:
                 compdatl_table['I'] = [compdatl_table['I'].iloc[r] if compdatl_table['I'].iloc[r] > 0 else _defaultIJ(
-                    compdatl_table['date'].iloc[r], compdatl_table['date'].iloc[r], 'I', welspecl_table) for r in
-                                       len(compdatl_table)]
+                    compdatl_table['well'].iloc[r], compdatl_table['date'].iloc[r], 'I', welspecl_table) for r in
+                                       range(len(compdatl_table))]
             if 0 in compdatl_table['J'].values:
-                compdatl_table['J'] = [compdatl_table['I'].iloc[r] if compdatl_table['I'].iloc[r] > 0 else _defaultIJ(
-                    compdatl_table['date'].iloc[r], compdatl_table['date'].iloc[r], 'J', welspecl_table) for r in
-                                       len(compdatl_table)]
+                compdatl_table['J'] = [compdatl_table['J'].iloc[r] if compdatl_table['J'].iloc[r] > 0 else _defaultIJ(
+                    compdatl_table['well'].iloc[r], compdatl_table['date'].iloc[r], 'J', welspecl_table) for r in
+                                       range(len(compdatl_table))]
         to_float = ['transimissibility factor', 'well bore diameter', 'Kh', 'skin', 'D-factor',
                     'pressure equivalent radius']
         compdatl_table[to_float] = compdatl_table[to_float].astype(float, errors='ignore')

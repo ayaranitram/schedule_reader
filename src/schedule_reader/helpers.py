@@ -5,8 +5,8 @@ developed by: Martin Araya
 email: martinaraya@gmail.com
 """
 
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def remove_inline_comment(line:str) -> str:
     """
@@ -28,7 +28,10 @@ def remove_inline_comment(line:str) -> str:
     for quotation in ['"', "'"]:
         if _cut[min(_cut)] == quotation:
             _open = min(_cut)
-            _close = _open + line[_open+1:].index(quotation) + 1
+            try:
+                _close = _open + line[_open+1:].index(quotation) + 1
+            except ValueError:
+                break  # unmatched quote, treat as no quoted section
             if '/' in line[_close:]:
                 _cut = _close + line[_close:].index('/') + 1
                 done = True

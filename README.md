@@ -16,6 +16,13 @@ Any other SCHEDULE section keyword can be extracted, but the columns will not be
 
 Returns a DataFrame with the extracted data, associated to its respective date from DATES keyword.
 
+## Release 0.7.16 (2026-05-03)
+- Fixed TSTEP date conversion to use cumulative increments.
+- Fixed parsing issues in WELSPECL and WELLSPEC records.
+- Improved robustness for SKIP blocks, EOF handling, and inline comment parsing.
+- Fixed COMPDAT/COMPDATL default I/J resolution and several keyword-table None guards.
+- Improved VFPINJ parsing initialization and general parser stability.
+
 ## To install this package:  
 Install it from the <a href="https://pypi.org/project/schedule-reader/">pypi.org</a> repository:  
 `pip install schedule-reader`  

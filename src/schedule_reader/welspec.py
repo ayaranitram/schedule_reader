@@ -11,8 +11,8 @@ import pandas as pd
 from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def extract_welspecs(schedule_dict:dict) -> pd.DataFrame:
     """
@@ -30,7 +30,7 @@ def extract_welspecs(schedule_dict:dict) -> pd.DataFrame:
                         'inflow equation', 'automatic shut-in', 'crossflow', 'pressure table', 'density calculation',
                         'FIP region', '_reserved1', '_reserved2', 'well model', 'polymer']
     welspecs_table = extract_keyword(schedule_dict, 'WELSPECS', welspecs_columns)  # {}
-    if len(welspecs_table) > 0:
+    if welspecs_table is not None and len(welspecs_table) > 0:
         welspecs_table['date'] = parse_dates(
             welspecs_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         welspecs_table['well'] = [well.strip("'") for well in welspecs_table['well']]
@@ -57,7 +57,7 @@ def extract_welspecl(schedule_dict:dict) -> pd.DataFrame:
                         'drainage radius', 'inflow equation', 'automatic shut-in', 'crossflow', 'pressure table',
                         'density calculation', 'FIP region', '_reserved1', '_reserved2', 'well model', 'polymer']
     welspecl_table = extract_keyword(schedule_dict, 'WELSPECL', welspecl_columns)  # {}
-    if len(welspecl_table) > 0:
+    if welspecl_table is not None and len(welspecl_table) > 0:
         welspecl_table['date'] = parse_dates(
             welspecl_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         welspecl_table['well'] = [well.strip("'") for well in welspecl_table['well']]
@@ -82,7 +82,7 @@ def extract_wellspec(schedule_dict:dict) -> pd.DataFrame:
     """
     wellspec_columns = ['date', 'well', 'group', 'I', 'J', 'reference depth', 'separator name', 'FIP region']
     wellspec_table = extract_keyword(schedule_dict, 'WELLSPEC', wellspec_columns)  # {}
-    if len(wellspec_table) > 0:
+    if wellspec_table is not None and len(wellspec_table) > 0:
         wellspec_table['date'] = parse_dates(
             wellspec_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         wellspec_table['well'] = [well.strip("'") for well in wellspec_table['well']]

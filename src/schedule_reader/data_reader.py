@@ -11,8 +11,8 @@ from .property_keywords import expand_keyword
 from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.5'
-__release__ = 20260304
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
               start_date: str=None, paths: dict={}, folder: str=None, counter: Counter=None, main=True,
@@ -73,7 +73,8 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
         else:
             return extracted[max(extracted_dates)]['DATES']
 
-    skip0_keywords = ('ECHO', 'NOECHO', 'SKIPREST', 'SKIP', 'SKIP100', 'SKIP300', 'ENDSKIP', 'RPTONLY', 'RPTONLYO', 'SAVENOW')
+    skip0_keywords = ('ECHO', 'NOECHO', 'SKIPREST', 'ENDSKIP', 'RPTONLY', 'RPTONLYO', 'SAVENOW')
+    skip_set_keywords = ('SKIP', 'SKIP100', 'SKIP300')
     skip1_keywords = ('NEXT', 'NEXTSTEP', 'LIFTOPT', 'GCONTOL', 'GUIDERAT', 'WLIMTOL', 'RPTSCHED', 'FILEUNIT', 'CVCRIT',
                       'TITLE')
     skip3_keywords = ('TUNING')
@@ -173,14 +174,16 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
         # skip lines as indicated by SKIP keywords
         if skip_ and not datafile[line].upper().startswith('ENDSKIP'):
             line += 1
+            continue
         elif skip_ and datafile[line].upper().startswith('ENDSKIP'):
             line += 1
             skip_ = False
-
+            continue
 
         # skip empty and comment lines
         if _empty_line() or _comment_line():
             line += 1
+            continue
 
 
         # terminate reading if END keyword is found
@@ -232,6 +235,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 dates = tstep_to_dates(tstep, last_date_for_tsteps)
                 for i, date in enumerate(dates):
                     extracted[counter()] = {'DATES': str(date)}
+                last_date_for_tsteps = dates.iloc[-1]  # update start date for next continuation line
                 read_tstep_lines = not _keyword_end_1record()
 
             line += 1  # keyword end line
@@ -287,9 +291,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 compdat_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    compdat_line += _line_data().split()
+                    if line < len(datafile):
+                        compdat_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -332,9 +337,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 compdatl_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    compdatl_line += _line_data().split()
+                    if line < len(datafile):
+                        compdatl_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -377,9 +383,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 
                 # append lines until line slash
                 welspecs_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    welspecs_line += _line_data().split()
+                    if line < len(datafile):
+                        welspecs_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -422,15 +429,16 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 welspecl_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    welspecl_line += _line_data().split()
+                    if line < len(datafile):
+                        welspecl_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
                 if len(welspecl_line) < key_columns:
                     welspecl_line_expanded = []
-                    for each in welspecs_line:
+                    for each in welspecl_line:
                         if len(each) >= 2 and each.endswith('*') and each[:-1].isdigit():
                             welspecl_line_expanded = welspecl_line_expanded + (['1*'] * int(each[:-1]))
                         else:
@@ -467,15 +475,16 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 wellspec_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    wellspec_line += _line_data().split()
+                    if line < len(datafile):
+                        wellspec_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
                 if len(wellspec_line) < key_columns:
                     wellspec_line_expanded = []
-                    for each in welspecs_line:
+                    for each in wellspec_line:
                         if len(each) >= 2 and each.endswith('*') and each[:-1].isdigit():
                             wellspec_line_expanded = wellspec_line_expanded + (['1*'] * int(each[:-1]))
                         else:
@@ -512,9 +521,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 wconprod_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    wconprod_line += _line_data().split()
+                    if line < len(datafile):
+                        wconprod_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -557,9 +567,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
               # append lines until line slash
                 wconhist_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    wconhist_line += _line_data().split()
+                    if line < len(datafile):
+                        wconhist_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -602,9 +613,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 wconinje_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    wconinje_line += _line_data().split()
+                    if line < len(datafile):
+                        wconinje_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -647,9 +659,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 wconinjh_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    wconinjh_line += _line_data().split()
+                    if line < len(datafile):
+                        wconinjh_line += _line_data().split()
                 line += 1
 
                 # complete default values at the end if requered
@@ -846,6 +859,13 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # read the listed keywords, that doesn't have and ending line with /
+        elif _keyword() in skip_set_keywords:
+            keyword_ = _keyword()
+            if verbose:
+                print(f"found {keyword_} keyword, activating skip mode")
+            skip_ = True
+            extracted[counter()] = {keyword_: None}
+            line += 1
         elif _keyword() in skip0_keywords:
             keyword_ = _keyword()
             extracted[counter()] = {keyword_: None}
@@ -892,9 +912,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
                 # append lines until line slash
                 keyword_line = _line_data().split()
-                while '/' not in _this_line():
+                while line < len(datafile) and '/' not in _this_line():
                     line += 1
-                    keyword_line += _line_data().split()
+                    if line < len(datafile):
+                        keyword_line += _line_data().split()
 
                 # expand default values if needed
                 keyword_line_expanded = []
@@ -962,6 +983,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 print(f"found {keyword_} keyword")
 
             vfp_tables, vfp_records, vfp_line = 1, 3, []
+            vfp_data = ''
             while line < len(datafile) and vfp_tables > 0:
 
                 if _empty_line() or _comment_line():

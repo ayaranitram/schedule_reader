@@ -9,8 +9,8 @@ import pandas as pd
 from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def extract_wlist(schedule_dict:dict) -> pd.DataFrame:
     """
@@ -26,7 +26,7 @@ def extract_wlist(schedule_dict:dict) -> pd.DataFrame:
     """
     wlist_columns = ['date', 'list', 'operation'] + [f"well{str(w).zfill(2)}" for w in range(1000)]
     wlist_table = extract_keyword(schedule_dict, 'WLIST', wlist_columns)  # {}
-    if len(wlist_table) > 0:
+    if wlist_table is not None and len(wlist_table) > 0:
         wlist_table['date'] = parse_dates(
             wlist_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         wlist_table['list'] = [wlist.strip("'") for wlist in wlist_table['list']]

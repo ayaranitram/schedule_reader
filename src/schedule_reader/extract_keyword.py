@@ -7,8 +7,8 @@ email: martinaraya@gmail.com
 
 import pandas as pd
 
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def extract_keyword(schedule_dict:dict, keyword:str, record_names=None) -> pd.DataFrame:
     """

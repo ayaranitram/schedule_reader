@@ -4,8 +4,8 @@ A simple counter class that can be used to count the number of iterations in a l
 developed by: Martin Araya
 email: martinaraya@gmail.com
 """
-__version__ = '0.7.0'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 class Counter(object):
     """A simple counter that can be used to count the number of iterations in a loop."""
@@ -43,17 +43,17 @@ class Counter(object):
 
     def __add__(self, other: int):
         """Add a value to the current count and return the new count."""
-        self.current = self.curr + other
+        self.current = self.curr() + other
         return self.curr()
 
     def __sub__(self, other: int):
         """Subtract a value from the current count and return the new count."""
-        self.current = self.curr - other
+        self.current = self.curr() - other
         return self.curr()
 
     def __mult__(self, other: int):
         """Multiply the current count by a value and return the new count."""
-        self.current = self.curr * other
+        self.current = self.curr() * other
         return self.curr()
 
     def __repr__(self):

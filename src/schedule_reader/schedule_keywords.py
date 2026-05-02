@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 from .time_parser import parse_dates
 
-__version__ = '0.7.2'
-__release__ = 20260228
+__version__ = '0.7.16'
+__release__ = 20260503
 
 def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) -> pd.DataFrame:
     """
