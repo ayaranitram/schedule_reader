@@ -31,7 +31,7 @@ def extract_wconprod(schedule_dict:dict) -> pd.DataFrame:
                         'pressure offset', 'temperature offset', 'calorific target rate', 'linearly combined rate',
                         'NGL rate']
     wconprod_table = extract_keyword(schedule_dict, 'WCONPROD', wconprod_columns)  # {}
-    if len(wconprod_table) > 0:
+    if wconprod_table is not None and len(wconprod_table) > 0:
         wconprod_table['date'] = parse_dates(
             wconprod_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         wconprod_table['well'] = [well.strip("'") for well in wconprod_table['well']]
@@ -60,7 +60,7 @@ def extract_wconinje(schedule_dict:dict) -> pd.DataFrame:
                         'vap oil concentration', 'thermal ratio of gas to steam', 'OIL proportion', 'WATER proportion',
                         'GAS proportion', 'ratio of oil oil to steam']
     wconinje_table = extract_keyword(schedule_dict, 'WCONINJE', wconinje_columns)  # {}
-    if len(wconinje_table) > 0:
+    if wconinje_table is not None and len(wconinje_table) > 0:
         wconinje_table['date'] = parse_dates(
             wconinje_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         wconinje_table['well'] = [well.strip("'") for well in wconinje_table['well']]
@@ -70,7 +70,7 @@ def extract_wconinje(schedule_dict:dict) -> pd.DataFrame:
         fill0 = ['vap oil concentration', 'thermal ratio of gas to steam',
                                'OIL proportion', 'WATER proportion', 'GAS proportion',
                                'ratio of oil oil to steam']
-        wconinje_table[fill0] = wconinje_table[fill0].fillna(0, inplace=True)
+        wconinje_table[fill0] = wconinje_table[fill0].fillna(0)
     return wconinje_table
 
 
@@ -89,7 +89,7 @@ def extract_wconhist(schedule_dict:dict) -> pd.DataFrame:
     wconhist_columns = ['date', 'well', 'status', 'control mode', 'OIL rate', 'WATER rate', 'GAS rate', 'VFP', 'ALQ',
                         'THP limit', 'BHP limit', 'wet gas rate', 'NGL rate']
     wconhist_table = extract_keyword(schedule_dict, 'WCONHIST', wconhist_columns)  # {}
-    if len(wconhist_table) > 0:
+    if wconhist_table is not None and len(wconhist_table) > 0:
         wconhist_table['date'] = parse_dates(
             wconhist_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         wconhist_table['well'] = [well.strip("'") for well in wconhist_table['well']]
@@ -98,7 +98,7 @@ def extract_wconhist(schedule_dict:dict) -> pd.DataFrame:
         wconhist_table.loc[:, ['status']].fillna('OPEN', inplace=True)
         fill0 = ['OIL rate', 'WATER rate', 'GAS rate', 'THP limit', 'BHP limit', 'wet gas rate', 'NGL rate']
         wconhist_table[fill0] = wconhist_table[fill0].fillna(0)
-        wconhist_table['VFP'] = wconhist_table['VFP'].fillna(method='ffill')
+        wconhist_table['VFP'] = wconhist_table['VFP'].ffill()
     return wconhist_table
 
 
@@ -118,7 +118,7 @@ def extract_wconinjh(schedule_dict:dict) -> pd.DataFrame:
                         'vap oil concentration', 'OIL proportion', 'WATER proportion', 'GAS proportion',
                         'control model']
     wconinjh_table = extract_keyword(schedule_dict, 'WCONINJH', wconinjh_columns)  # {}
-    if len(wconinjh_table) > 0:
+    if wconinjh_table is not None and len(wconinjh_table) > 0:
         wconinjh_table['date'] = parse_dates(
             wconinjh_table['date'].to_list())  # to parse dates exactly as stated by DATES eclipse format
         wconinjh_table['well'] = [well.strip("'") for well in wconinjh_table['well']]
@@ -127,6 +127,6 @@ def extract_wconinjh(schedule_dict:dict) -> pd.DataFrame:
         wconinjh_table['status'] = wconinjh_table['status'].fillna('OPEN')
         fill0 = ['injection rate', 'BHP', 'THP', 'vap oil concentration', 'OIL proportion', 'WATER proportion', 'GAS proportion']
         wconinjh_table[fill0] = wconinjh_table[fill0].fillna(0)
-        wconinjh_table['VFP'] = wconinjh_table.fillna(method='ffill')
+        wconinjh_table['VFP'] = wconinjh_table['VFP'].ffill()
         wconinjh_table['control model'] = wconinjh_table['control model'].fillna('RATE')
     return wconinjh_table
