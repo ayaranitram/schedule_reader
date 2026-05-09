@@ -17,6 +17,12 @@ Any other SCHEDULE section keyword can be extracted, but the columns will not be
 
 Returns a DataFrame with the extracted data, associated to its respective date from DATES keyword.
 
+## Release 0.7.21 (2026-05-09)
+- Refactored keyword matching logic to use exact matching via `_keyword()` instead of string prefix matching.
+    - Fixed critical bug where `TSTEPCRIT` was incorrectly routed to `TSTEP` handler due to prefix collision.
+    - Eliminated potential prefix collision issues with other keywords (`TIME`, `DATES`, `COMPDAT`, `WELSPEC*`, `WCON*`, etc.).
+- Improved parser robustness through consistent exact keyword matching.
+
 ## Release 0.7.20 (2026-05-09)
 - Normalized `dates2df()` to always return a pandas DataFrame.
 - Normalized `get_start_date()` and `get_end_date()` to always return `pandas.Timestamp` (or `None`).

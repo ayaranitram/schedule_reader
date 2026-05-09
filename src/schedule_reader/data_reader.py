@@ -11,7 +11,7 @@ from .property_keywords import expand_keyword
 from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.19'
+__version__ = '0.7.21'
 __release__ = 20260509
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
@@ -179,10 +179,10 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # skip lines as indicated by SKIP keywords
-        if skip_ and not datafile[line].upper().startswith('ENDSKIP'):
+        if skip_ and _keyword() != 'ENDSKIP':
             line += 1
             continue
-        elif skip_ and datafile[line].upper().startswith('ENDSKIP'):
+        elif skip_ and _keyword() == 'ENDSKIP':
             line += 1
             skip_ = False
             continue
@@ -194,14 +194,14 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # terminate reading if END keyword is found
-        if datafile[line].upper().startswith('END') and len(_line_data().split()[0]) == 3:
+        if _keyword() == 'END':
             if verbose:
                 print(f"found END keyword in line {line}, terminating reading...")
             break
 
 
         # if a DATES is found
-        elif datafile[line].upper().startswith('DATES'):
+        elif _keyword() == 'DATES':
             line += 1
             if verbose:
                 print("found DATES keyword")
@@ -222,7 +222,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if TSTEP is found, it will be converted to DATES using the last date found as start date
-        elif datafile[line].upper().startswith('TSTEP'):
+        elif _keyword() == 'TSTEP':
             line += 1
             if verbose:
                 print("found TSTEP keyword")
@@ -251,7 +251,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
         
 
         # if TIME is found, it will be converted to DATES using the START date as reference
-        elif datafile[line].upper().startswith('TIME'):
+        elif _keyword() == 'TIME':
             line += 1
             if verbose:
                 print("found TIME keyword")
@@ -278,7 +278,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if COMPDAT is found
-        elif datafile[line].upper().startswith('COMPDAT'):
+        elif _keyword() == 'COMPDAT':
             line += 1
             key_columns = 14
             if verbose:
@@ -324,7 +324,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if COMPDATL or COMPDATM is found
-        elif datafile[line].upper().startswith('COMPDATL') or datafile[line].upper().startswith('COMPDATM'):
+        elif _keyword() in ('COMPDATL', 'COMPDATM'):
             line += 1
             key_columns = 15
             if verbose:
@@ -370,7 +370,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WELSPECS is found
-        elif datafile[line].upper().startswith('WELSPECS'):
+        elif _keyword() == 'WELSPECS':
             line += 1
             key_columns = 17
             if verbose:
@@ -416,7 +416,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WELSPECL is found
-        elif datafile[line].upper().startswith('WELSPECL'):
+        elif _keyword() == 'WELSPECL':
             line += 1
             key_columns = 18
             if verbose:
@@ -462,7 +462,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WELLSPEC is found
-        elif datafile[line].upper().startswith('WELLSPEC'):
+        elif _keyword() == 'WELLSPEC':
             line += 1
             key_columns = 7
             if verbose:
@@ -508,7 +508,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WCONPROD is found
-        elif datafile[line].upper().startswith('WCONPROD'):
+        elif _keyword() == 'WCONPROD':
             line += 1
             key_columns = 20
             if verbose:
@@ -554,7 +554,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WCONHIST is found
-        elif datafile[line].upper().startswith('WCONHIST'):
+        elif _keyword() == 'WCONHIST':
             line += 1
             key_columns = 12
             if verbose:
@@ -600,7 +600,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WCONINJE is found
-        elif datafile[line].upper().startswith('WCONINJE'):
+        elif _keyword() == 'WCONINJE':
             line += 1
             key_columns = 15
             if verbose:
@@ -646,7 +646,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if WCONINJH is found
-        elif datafile[line].upper().startswith('WCONINJH'):
+        elif _keyword() == 'WCONINJH':
             line += 1
             key_columns = 12
             if verbose:
@@ -692,7 +692,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if INCLUDE is found, will read the include file
-        elif datafile[line].upper().startswith('INCLUDE'):
+        elif _keyword() == 'INCLUDE':
             line += 1
             if verbose:
                 print(f"found INCLUDE file inside {filepath}:")
@@ -726,7 +726,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if RESERVOIRS is found, will read each reservoir data file recursively
-        elif datafile[line].upper().startswith('RESERVOIRS'):
+        elif _keyword() == 'RESERVOIRS':
             line += 1
             if verbose:
                 print(f"found RESERVOIRS keyword inside {filepath}:")
@@ -793,7 +793,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
 
 
         # if SLAVES is found, will read each slave data file recursively
-        elif datafile[line].upper().startswith('SLAVES'):
+        elif _keyword() == 'SLAVES':
             line += 1
             if verbose:
                 print(f"found SLAVES keyword inside {filepath}:")
@@ -997,7 +997,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                     f" for: {', '.join(set([extracted[i_][keyword_][0] for i_ in range(_counter0, counter.curr() + 1)]))}")
 
 
-        elif datafile[line].upper().startswith('VFPPROD'):
+        elif _keyword() == 'VFPPROD':
             keyword_ = _keyword()
             line += 1
             if verbose:
@@ -1030,7 +1030,7 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 line += 1
             extracted[counter()] = {keyword_: vfp_data}
 
-        elif datafile[line].upper().startswith('VFPINJ'):
+        elif _keyword() == 'VFPINJ':
             keyword_ = _keyword()
             line += 1
             if verbose:
