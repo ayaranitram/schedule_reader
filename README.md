@@ -17,6 +17,15 @@ Any other SCHEDULE section keyword can be extracted, but the columns will not be
 
 Returns a DataFrame with the extracted data, associated to its respective date from DATES keyword.
 
+## Release 0.7.20 (2026-05-09)
+- Normalized `dates2df()` to always return a pandas DataFrame.
+- Normalized `get_start_date()` and `get_end_date()` to always return `pandas.Timestamp` (or `None`).
+
+## Release 0.7.19 (2026-05-09)
+- Added shape-based skip handling for ECHELON SCHEDULE keywords (`COLORING`, `SOLVER`, `TSTEPCRIT`, `TUNINGDP`, `TUNING`, `EXPTSOLV`).
+- Improved block keyword termination handling to respect slash-terminated records with inline comments.
+- Fixed `TUNING` parsing so all three records are captured correctly across continuation lines.
+
 ## Release 0.7.17 (2026-05-09)
 - Fixed Python 3.7 compatibility in file path handling.
 - Fixed a `TUNING` keyword membership bug caused by a one-item tuple typo.

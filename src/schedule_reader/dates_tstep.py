@@ -9,7 +9,7 @@ import pandas as pd
 from .time_parser import parse_dates
 from .schedule_keywords import extract_keyword
 
-__version__ = '0.7.17'
+__version__ = '0.7.20'
 __release__ = 20260509
 
 
@@ -34,7 +34,7 @@ def get_first_date(schedule_dict:dict, verbose=False) -> pd.Timestamp:
 
     Params:
         schedule_dict: dict
-            shedule dictionary prepared by the .data_reader.read_data function  
+            schedule dictionary prepared by the .data_reader.read_data function
     Return:
         pandas.Timestamp or None
     """
@@ -42,7 +42,7 @@ def get_first_date(schedule_dict:dict, verbose=False) -> pd.Timestamp:
         print("Extracting DATES keyword to find the start date...")
     dates = extract_dates(schedule_dict)
     if len(dates) > 0:
-        start_date = dates.min()
+        start_date = pd.Timestamp(dates.min())
         if verbose:
             print(f"Start date found: {start_date}")
         return start_date
@@ -65,7 +65,7 @@ def get_last_date(schedule_dict:dict, verbose=False) -> pd.Timestamp:
         print("Extracting DATES keyword to find the end date...")
     dates = extract_dates(schedule_dict)
     if len(dates) > 0:
-        end_date = dates.max()
+        end_date = pd.Timestamp(dates.max())
         if verbose:
             print(f"End date found: {end_date}")
         return end_date

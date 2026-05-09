@@ -34,8 +34,8 @@ def parse_dates(dates_keyword):
                      for each in dates_keyword
                      if not str(each).strip().upper().startswith('DATES') and not str(each).strip().startswith('/')]
 
-    # parse dates lines
-    return pd.to_datetime(dates_keyword, format='mixed', dayfirst=True).values
+    # parse dates lines and keep a pandas type instead of numpy array
+    return pd.Series(pd.to_datetime(dates_keyword, format='mixed', dayfirst=True), name='DATES')
 
 
 def tstep_to_dates(tstep, start_date):

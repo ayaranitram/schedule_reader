@@ -11,7 +11,7 @@ from .property_keywords import expand_keyword
 from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.17'
+__version__ = '0.7.19'
 __release__ = 20260509
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
@@ -53,6 +53,9 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
     def _keyword_end_1record():
         return datafile[line].strip().endswith('/')
 
+    def _block_end_line():
+        return _this_line().strip().endswith('/')
+
     def _comment_line():
         return datafile[line].strip().startswith('--')
 
@@ -73,10 +76,12 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
         else:
             return extracted[max(extracted_dates)]['DATES']
 
-    skip0_keywords = ('ECHO', 'NOECHO', 'SKIPREST', 'ENDSKIP', 'RPTONLY', 'RPTONLYO', 'SAVENOW')
+    skip0_keywords = ('ECHO', 'NOECHO', 'SKIPREST', 'ENDSKIP', 'RPTONLY', 'RPTONLYO', 'SAVENOW', 'EXPTSOLV',)
     skip_set_keywords = ('SKIP', 'SKIP100', 'SKIP300')
     skip1_keywords = ('NEXT', 'NEXTSTEP', 'LIFTOPT', 'GCONTOL', 'GUIDERAT', 'WLIMTOL', 'RPTSCHED', 'FILEUNIT', 'CVCRIT',
                       'TITLE')
+    skip_record_keywords = ('COLORING',)
+    skip_block_keywords = ('SOLVER', 'TSTEPCRIT', 'TUNINGDP')
     skip3_keywords = ('TUNING',)
 
     # check file exists
@@ -884,17 +889,64 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 line += 1
             extracted[counter()] = {keyword_: _line_data()}
             line += 1
+        elif _keyword() in skip_record_keywords:
+            keyword_ = _keyword()
+            extracted[counter()] = {keyword_: None}
+            if verbose:
+                print(f"found {keyword_} keyword")
+
+            # Skip from keyword declaration to the first record slash.
+            if '/' in _this_line():
+                line += 1
+            else:
+                line += 1
+                while line < len(datafile):
+                    if _empty_line() or _comment_line():
+                        line += 1
+                        continue
+                    if '/' in _this_line():
+                        line += 1
+                        break
+                    line += 1
+        elif _keyword() in skip_block_keywords:
+            keyword_ = _keyword()
+            extracted[counter()] = {keyword_: None}
+            if verbose:
+                print(f"found {keyword_} keyword")
+
+            # Skip multi-record blocks until a standalone slash terminator.
+            line += 1
+            while line < len(datafile):
+                if _empty_line() or _comment_line():
+                    line += 1
+                    continue
+                if _block_end_line():
+                    line += 1
+                    break
+                line += 1
         elif _keyword() in skip3_keywords:
             keyword_ = _keyword()
             if verbose:
                 print(f"found {keyword_} keyword")
             line += 1
-            for i in range(3):
-                # skip empty or commented lines
-                while _empty_line() or _comment_line():
+            for _ in range(3):
+                # skip empty or commented lines before each record
+                while line < len(datafile) and (_empty_line() or _comment_line()):
                     line += 1
-                extracted[counter()] = {keyword_: _line_data()}
-                line += 1
+
+                if line >= len(datafile):
+                    break
+
+                # Read one KEYWORD record across continuation lines until '/'.
+                keyword_record = _line_data().split()
+                while line < len(datafile) and '/' not in _this_line():
+                    line += 1
+                    if line < len(datafile) and not (_empty_line() or _comment_line()):
+                        keyword_record += _line_data().split()
+
+                extracted[counter()] = {keyword_: ' '.join(keyword_record)}
+                if line < len(datafile):
+                    line += 1
 
 
         # generic procedure to read any other COMPLETION, WELL, GROUP or USER DEFINED keyword (because they end with /)

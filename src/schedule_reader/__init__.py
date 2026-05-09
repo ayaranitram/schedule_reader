@@ -22,7 +22,7 @@ from .counter import start_counter
 
 __all__ = ['compdat2df', 'welspecs2df', 'property2df', 'start_counter', 'dates2df', 'get_start_date', 
            'get_end_date', 'keyword2df', 'wconprod2df', 'wconinje2df', 'wconhist2df', 'wconinjh2df', 'wlist2df', 'gconprod2df', 'gconinje2df']
-__version__ = '0.7.17'
+__version__ = '0.7.20'
 __release__ = 20260509
 
 
@@ -38,8 +38,17 @@ def dates2df(path, encoding='cp1252', verbose=False):
         pd.DataFrame: A DataFrame containing the DATES data.
     """
     if isinstance(path, dict):
-        return extract_dates(path, keyword='DATES')
-    return extract_dates(read_data(path, encoding=encoding, verbose=verbose))
+        dates = extract_dates(path, keyword='DATES')
+    else:
+        dates = extract_dates(read_data(path, encoding=encoding, verbose=verbose))
+
+    if dates is None:
+        return pd.DataFrame(columns=['DATES'])
+    if isinstance(dates, pd.DataFrame):
+        return dates
+    if isinstance(dates, pd.Series):
+        return dates.rename('DATES').to_frame()
+    return pd.Series(dates, name='DATES').to_frame()
 
 def get_start_date(path, encoding='cp1252', verbose=False):
     """
@@ -52,7 +61,8 @@ def get_start_date(path, encoding='cp1252', verbose=False):
         pd.Timestamp or None: The start date from the DATES keyword, or None if the DATES keyword is not found.
     """
     if isinstance(path, dict):
-        return get_first_date(path, verbose=verbose)
+        start_date = get_first_date(path, verbose=verbose)
+        return None if start_date is None else pd.Timestamp(start_date)
     
     import os
     if not os.path.isfile(path):
@@ -67,7 +77,7 @@ def get_start_date(path, encoding='cp1252', verbose=False):
         start_date = datafile[[remove_inline_comment(line) for line in datafile].index('START') + 1].replace('/', '').strip()
         if verbose:
             print(f"Found START date: {start_date}")
-        return parse_dates([start_date])[0]
+        return pd.Timestamp(parse_dates([start_date]).iloc[0])
     else:
         if verbose:
             print("No START date found in the schedule data. Attempting to extract from DATES keyword...")
@@ -76,7 +86,7 @@ def get_start_date(path, encoding='cp1252', verbose=False):
             print(f"Start date extracted from DATES keyword: {start_date}")
         elif verbose:
             print("No dates found in the schedule dictionary.")
-        return start_date
+        return None if start_date is None else pd.Timestamp(start_date)
 
 def get_end_date(path, encoding='cp1252', verbose=False):
     """
@@ -89,12 +99,14 @@ def get_end_date(path, encoding='cp1252', verbose=False):
         pd.Timestamp or None: The end date from the DATES keyword, or None if the DATES keyword is not found.
     """
     if isinstance(path, dict):
-        return get_last_date(path, verbose=verbose)
+        end_date = get_last_date(path, verbose=verbose)
+        return None if end_date is None else pd.Timestamp(end_date)
 
     if not isfile(path):
         raise FileNotFoundError(f"The file {path} does not exist.")
 
-    return get_last_date(read_data(path, encoding=encoding, verbose=verbose), verbose=verbose)
+    end_date = get_last_date(read_data(path, encoding=encoding, verbose=verbose), verbose=verbose)
+    return None if end_date is None else pd.Timestamp(end_date)
 
 def compdat2df(path, encoding='cp1252', verbose=False):
     """
