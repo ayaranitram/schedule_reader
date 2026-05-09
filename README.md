@@ -3,6 +3,7 @@ A set of functions to read eclipse format DATA file and include files and extrac
   
 Using the following functions, the corresponding keywords are recognized and the corresponding parameters names are set as columns labels:
 - DATES and TSTEP with `dates2df` (TSTEP are transformed into the corresponding datetime)
+- DATES bounds with `get_start_date` and `get_end_date`
 - WELSPECS with `welspec2df` 
 - COMPDAT with `compdat2df`
 - WCONHIST with `wconhist2df`
@@ -15,6 +16,13 @@ These functions must be provided with the path to .DATA file or include file as 
 Any other SCHEDULE section keyword can be extracted, but the columns will not be labelled, using the function keyword2df providing the path to the file and requested keyword as arguments.
 
 Returns a DataFrame with the extracted data, associated to its respective date from DATES keyword.
+
+## Release 0.7.17 (2026-05-09)
+- Fixed Python 3.7 compatibility in file path handling.
+- Fixed a `TUNING` keyword membership bug caused by a one-item tuple typo.
+- Declared the pandas dependency explicitly in package metadata.
+- Added Python 3.12, 3.13, and 3.14 classifiers.
+- Added a public `get_end_date` helper and documented the date helper API.
 
 ## Release 0.7.16 (2026-05-03)
 - Fixed TSTEP date conversion to use cumulative increments.

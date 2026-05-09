@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 from .helpers import remove_inline_comment
 
-__version__ = '0.7.16'
-__release__ = 20260503
+__version__ = '0.7.17'
+__release__ = 20260509
 
 def parse_dates(dates_keyword):
     """
@@ -21,7 +21,7 @@ def parse_dates(dates_keyword):
     Return:
         pandas.Series of dtype datetime64[ns]
     """
-    if type(dates_keyword) is str:
+    if isinstance(dates_keyword, str):
         if '\n' in dates_keyword:
             dates_keyword = dates_keyword.split('\n')
         else:

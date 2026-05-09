@@ -11,8 +11,8 @@ from .property_keywords import expand_keyword
 from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.16'
-__release__ = 20260503
+__version__ = '0.7.17'
+__release__ = 20260509
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
               start_date: str=None, paths: dict={}, folder: str=None, counter: Counter=None, main=True,
@@ -77,15 +77,17 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
     skip_set_keywords = ('SKIP', 'SKIP100', 'SKIP300')
     skip1_keywords = ('NEXT', 'NEXTSTEP', 'LIFTOPT', 'GCONTOL', 'GUIDERAT', 'WLIMTOL', 'RPTSCHED', 'FILEUNIT', 'CVCRIT',
                       'TITLE')
-    skip3_keywords = ('TUNING')
+    skip3_keywords = ('TUNING',)
 
     # check file exists
     if not exists(filepath):
-        newfilepath = f"{folder}{'' if folder.endswith('/') else '/'}{filepath.strip('"').strip("'").strip('"')}"
+        clean_filepath = filepath.strip('"').strip("'").strip('"')
+        separator = '' if folder.endswith('/') else '/'
+        newfilepath = f"{folder}{separator}{clean_filepath}"
         if exists(newfilepath):
             filepath = newfilepath
         else:
-            print(f"{folder}{'' if folder.endswith('/') else '/'}{filepath}")
+            print(f"{folder}{separator}{clean_filepath}")
             raise ValueError(f"The file doesn't exists: {filepath}")
     filepath = filepath.replace('\\', '/')
     if folder is None:

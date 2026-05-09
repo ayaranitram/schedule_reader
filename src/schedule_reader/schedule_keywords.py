@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 from .time_parser import parse_dates
 
-__version__ = '0.7.16'
-__release__ = 20260503
+__version__ = '0.7.17'
+__release__ = 20260509
 
 def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) -> pd.DataFrame:
     """
@@ -39,7 +39,7 @@ def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) 
             date = schedule_dict[each]['DATES']
         elif keyword in schedule_dict[each]:
             result_table[each] = [date] + (schedule_dict[each][keyword]
-                                           if type(schedule_dict[each][keyword]) is list
+                                           if isinstance(schedule_dict[each][keyword], list)
                                            else [schedule_dict[each][keyword]])
 
     _len = [len(result_table[each]) for each in result_table]

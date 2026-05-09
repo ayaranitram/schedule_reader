@@ -7,7 +7,7 @@ where = ["src"]
 
 [project]
 name = "schedule_reader"
-version = "0.7.16"
+version = "0.7.17"
 authors = [
   { name="Martin Carlos Araya", email="martinaraya@gmail.com" },
 ]
@@ -21,11 +21,15 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    ]
+  "pandas",
+]
 [project.urls]
 "Homepage" = "https://github.com/ayaranitram/schedule_reader"
 "Bug Tracker" = "https://github.com/ayaranitram/schedule_reader/issues"

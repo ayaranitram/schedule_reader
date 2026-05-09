@@ -17,12 +17,13 @@ from .gcon import extract_gconinje, extract_gconprod
 from .wlist import extract_wlist
 from .property_keywords import read_keyword_from_include, expand_keyword, ijk_index, get_dimens
 from .schedule_keywords import extract_keyword
-from .dates_tstep import extract_dates, get_first_date
+from .dates_tstep import extract_dates, get_first_date, get_last_date
 from .counter import start_counter
 
-__all__ = ['compdat2df', 'welspecs2df', 'property2df', 'start_counter', 'dates2df', 'get_start_date', 'keyword2df', 'wconprod2df', 'wconinje2df', 'wconhist2df', 'wconinjh2df', 'wlist2df', 'gconprod2df', 'gconinje2df']
-__version__ = '0.7.16'
-__release__ = 20260503
+__all__ = ['compdat2df', 'welspecs2df', 'property2df', 'start_counter', 'dates2df', 'get_start_date', 
+           'get_end_date', 'keyword2df', 'wconprod2df', 'wconinje2df', 'wconhist2df', 'wconinjh2df', 'wlist2df', 'gconprod2df', 'gconinje2df']
+__version__ = '0.7.17'
+__release__ = 20260509
 
 
 def dates2df(path, encoding='cp1252', verbose=False):
@@ -36,7 +37,7 @@ def dates2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the DATES data.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_dates(path, keyword='DATES')
     return extract_dates(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -50,7 +51,7 @@ def get_start_date(path, encoding='cp1252', verbose=False):
     Returns:
         pd.Timestamp or None: The start date from the DATES keyword, or None if the DATES keyword is not found.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return get_first_date(path, verbose=verbose)
     
     import os
@@ -77,6 +78,24 @@ def get_start_date(path, encoding='cp1252', verbose=False):
             print("No dates found in the schedule dictionary.")
         return start_date
 
+def get_end_date(path, encoding='cp1252', verbose=False):
+    """
+    Get the end date from the DATES keyword in the schedule data. If the DATES keyword is not found, return None.
+    Args:
+        path (str or dict): The path to the .DATA file or a dictionary containing the schedule data.
+        encoding (str, optional): The encoding of the .DATA file. Defaults to 'cp1252'.
+        verbose (bool, optional): Whether to print verbose output. Defaults to False.
+    Returns:
+        pd.Timestamp or None: The end date from the DATES keyword, or None if the DATES keyword is not found.
+    """
+    if isinstance(path, dict):
+        return get_last_date(path, verbose=verbose)
+
+    if not isfile(path):
+        raise FileNotFoundError(f"The file {path} does not exist.")
+
+    return get_last_date(read_data(path, encoding=encoding, verbose=verbose), verbose=verbose)
+
 def compdat2df(path, encoding='cp1252', verbose=False):
     """
     Extract the COMPDAT keyword from the schedule data and return a DataFrame of the corresponding data by DATES.
@@ -87,7 +106,7 @@ def compdat2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the COMPDAT data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_compdat2(path)
     return extract_compdat2(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -101,7 +120,7 @@ def welspecs2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the WELSPECS data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_welspec2(path)
     return extract_welspec2(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -115,7 +134,7 @@ def wconprod2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the WCONPROD data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_wconprod(path)
     return extract_wconprod(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -129,7 +148,7 @@ def wconinje2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the WCONINJE data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_wconinje(path)
     return extract_wconinje(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -143,7 +162,7 @@ def wconhist2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the WCONHIST data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_wconhist(path)
     return extract_wconhist(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -157,7 +176,7 @@ def wconinjh2df(path, encoding='cp1252', verbose=False):
     Returns:        
             pd.DataFrame: A DataFrame containing the WCONINJH data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_wconinjh(path)
     return extract_wconinjh(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -172,7 +191,7 @@ def wlist2df(path, encoding='cp1252', verbose=False):
         pd.DataFrame: A DataFrame containing the WLIST data by DATES.
     """
     
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_wlist(path)
     return extract_wlist(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -186,7 +205,7 @@ def gconprod2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the GCONPROD data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_gconprod(path)
     return extract_gconprod(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -200,7 +219,7 @@ def gconinje2df(path, encoding='cp1252', verbose=False):
     Returns:        
         pd.DataFrame: A DataFrame containing the GCONINJE data by DATES.
     """
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_gconinje(path)
     return extract_gconinje(read_data(path, encoding=encoding, verbose=verbose))
 
@@ -217,7 +236,7 @@ def keyword2df(path, keyword, record_names=[], encoding='cp1252', verbose=False)
         pd.DataFrame: A DataFrame containing the extracted keyword data by DATES.
     """
     record_names = None if len(record_names) == 0 else record_names
-    if type(path) is dict:
+    if isinstance(path, dict):
         return extract_keyword(path, keyword=keyword, record_names=record_names)
     return extract_keyword(
         read_data(path, encoding=encoding, verbose=verbose),
