@@ -17,6 +17,12 @@ Any other SCHEDULE section keyword can be extracted, but the columns will not be
 
 Returns a DataFrame with the extracted data, associated to its respective date from DATES keyword.
 
+## Release 0.7.23 (2026-05-09)
+- Improved 'C*', 'W*', 'G*', 'U*' keywords parser to better catch block terminations.
+
+## Release 0.7.22 (2026-05-09)
+- Improved keyword detection to avoid 
+
 ## Release 0.7.21 (2026-05-09)
 - Refactored keyword matching logic to use exact matching via `_keyword()` instead of string prefix matching.
     - Fixed critical bug where `TSTEPCRIT` was incorrectly routed to `TSTEP` handler due to prefix collision.

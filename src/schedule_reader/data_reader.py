@@ -11,7 +11,7 @@ from .property_keywords import expand_keyword
 from .time_parser import tstep_to_dates, time_to_dates
 from os.path import exists
 
-__version__ = '0.7.21'
+__version__ = '0.7.23'
 __release__ = 20260509
 
 def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
@@ -43,8 +43,13 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
     """
 
     def _keyword():
-        return datafile[line].split()[0].upper()
-
+        """Return the first uppercase token on the current line, or '' if
+        the line is empty/whitespace or past EOF."""
+        if line >= len(datafile):
+            return ''
+        parts = datafile[line].split()
+        return parts[0].upper() if parts else ''
+    
     def _keyword_end():
         if line >= len(datafile):
             return True
@@ -981,7 +986,35 @@ def read_data(filepath: str, *, encoding: str='cp1252', verbose: bool=False,
                 keyword_line = keyword_line_expanded
                 extracted[counter()] = {keyword_: keyword_line}
                 line += 1
-            line += 1
+                # Peek ahead for a block terminator. Two forms:
+                #   1. A lone '/' on its own line (standard terminator)
+                #   2. A new uppercase keyword at column 1 (the previous
+                #      record's '/' was inline; no separate block-end)
+                # Without this, the outer loop absorbs subsequent
+                # legitimate keywords (e.g. INCLUDE) as additional records.
+                peek = line
+                while peek < len(datafile) and (
+                        len(datafile[peek].strip()) == 0
+                        or datafile[peek].strip().startswith('--')):
+                    peek += 1
+                if peek < len(datafile):
+                    peek_line = datafile[peek].strip()
+                    # form 1
+                    if peek_line == '/':
+                        line = peek + 1
+                        break
+                    # form 2
+                    peek_no_comment = remove_inline_comment(datafile[peek])
+                    peek_tokens = peek_no_comment.split()
+                    if peek_tokens:
+                        first = peek_tokens[0]
+                        if (first.isalpha() and first.isupper()
+                                and len(first) >= 2
+                                and '=' not in first):
+                            line = peek
+                            break
+            else:
+                line += 1
 
             # expand default values at the end if needed
             keyword_max_ = [len(extracted[i_][keyword_]) for i_ in range(_counter0, counter.curr() + 1)]

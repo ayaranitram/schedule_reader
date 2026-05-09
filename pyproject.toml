@@ -7,7 +7,7 @@ where = ["src"]
 
 [project]
 name = "schedule_reader"
-version = "0.7.21"
+version = "0.7.23"
 authors = [
   { name="Martin Carlos Araya", email="martinaraya@gmail.com" },
 ]
