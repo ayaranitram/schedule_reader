@@ -22,8 +22,8 @@ from .counter import start_counter
 
 __all__ = ['compdat2df', 'welspecs2df', 'property2df', 'start_counter', 'dates2df', 'get_start_date', 
            'get_end_date', 'keyword2df', 'wconprod2df', 'wconinje2df', 'wconhist2df', 'wconinjh2df', 'wlist2df', 'gconprod2df', 'gconinje2df']
-__version__ = '0.7.24'
-__release__ = 20260901
+__version__ = '0.7.25'
+__release__ = 20260902
 
 
 def dates2df(path, encoding='cp1252', verbose=False):
