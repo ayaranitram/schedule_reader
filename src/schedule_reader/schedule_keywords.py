@@ -8,8 +8,8 @@ email: martinaraya@gmail.com
 import pandas as pd
 from .time_parser import parse_dates
 
-__version__ = '0.7.17'
-__release__ = 20260509
+__version__ = '0.7.24'
+__release__ = 20260901
 
 def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) -> pd.DataFrame:
     """
@@ -71,7 +71,8 @@ def extract_keyword(schedule_dict:dict, keyword: str = None, record_names=None) 
         print("No records found for keyword: ", keyword)
         return
 
-    result[result.select_dtypes(object).columns] = result.select_dtypes(object) \
+    string_columns = result.select_dtypes(include=['object', 'string']).columns
+    result[string_columns] = result[string_columns] \
         .apply(lambda col: col.str.strip(""""'" """)) \
         .replace('1*', None) \
         .convert_dtypes(infer_objects=True, convert_string=False,
