@@ -5,11 +5,37 @@ developed by: Martin Araya
 email: martinaraya@gmail.com
 """
 
+import re
 import pandas as pd
 from .helpers import remove_inline_comment
 
 __version__ = '0.7.17'
 __release__ = 20260509
+
+_ECLIPSE_DATE = re.compile(
+    r"^\s*'?(\d{1,2})'?\s+'?([A-Za-z]{3})'?\s+(\d{4})(?:\s+(\d{1,2}:\d{2}(?::\d{2}(?:\.\d+)?)?))?\s*/?\s*$")
+
+
+def parse_date(value):
+    """
+    parse a single date as pandas.Timestamp.
+    Eclipse format is DD MMM YYYY [HH:MM:SS.SSSS] (time is optional, JLY is accepted for JUL);
+    any other string is parsed as ISO 8601 (as generated from TIME and TSTEP), never day-first.
+    """
+    if not isinstance(value, str):
+        return pd.Timestamp(value)
+    match = _ECLIPSE_DATE.match(value)
+    if not match:
+        return pd.Timestamp(pd.to_datetime(value.strip(), format='ISO8601'))
+    day, month, year, clock = match.groups()
+    month = {'JLY': 'JUL'}.get(month.upper(), month.upper())
+    text = f"{int(day):02d} {month} {year}"
+    fmt = '%d %b %Y'
+    if clock:
+        text += f" {clock}"
+        fmt += ' %H:%M:%S.%f' if '.' in clock else ' %H:%M:%S' if clock.count(':') == 2 else ' %H:%M'
+    return pd.Timestamp(pd.to_datetime(text, format=fmt))
+
 
 def parse_dates(dates_keyword):
     """
@@ -35,7 +61,7 @@ def parse_dates(dates_keyword):
                      if not str(each).strip().upper().startswith('DATES') and not str(each).strip().startswith('/')]
 
     # parse dates lines and keep a pandas type instead of numpy array
-    return pd.Series(pd.to_datetime(dates_keyword, format='mixed', dayfirst=True), name='DATES')
+    return pd.Series([parse_date(each) for each in dates_keyword], dtype='datetime64[ns]', name='DATES')
 
 
 def tstep_to_dates(tstep, start_date):
@@ -48,7 +74,7 @@ def tstep_to_dates(tstep, start_date):
     Return:
         pandas.Series of dtype datetime64[ns]
     """
-    start_date = pd.to_datetime(start_date, format='mixed', dayfirst=True)
+    start_date = parse_date(start_date)
     cumulative = []
     total = 0.0
     for step in tstep:
@@ -67,6 +93,6 @@ def time_to_dates(time, start_date):
     Return:
         pandas.Series of dtype datetime64[ns]
     """
-    start_date = pd.to_datetime(start_date, format='mixed', dayfirst=True)
+    start_date = parse_date(start_date)
     return pd.Series([start_date + pd.Timedelta(days=each) for each in time], dtype='datetime64[ns]')
 
